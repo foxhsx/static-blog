@@ -1,0 +1,5 @@
+node_modules
+*.html
+/.vitepress/dist/
+.DS_Store
+/docs/resume.md
