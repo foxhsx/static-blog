@@ -1,4 +1,4 @@
-ame: Static Blog
+name: Static Blog
 on:
   push:
     branched: [main]

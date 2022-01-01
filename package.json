@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npx vitepress build",
-    "dev": "npx vitepress"
+    "start": "npx vitepress"
   },
   "devDependencies": {
     "globby": "^11.0.1",
