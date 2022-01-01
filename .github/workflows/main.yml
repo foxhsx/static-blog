@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@master
       - run: yarn
       - run: yarn build
-      - run: tar -zcvf release.tgz /.vitepress/dist
+      - run: tar -zcvf release.tgz .vitepress/dist
 
       # 发布 Release
       - name: Create Release
