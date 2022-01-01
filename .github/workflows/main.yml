@@ -1,7 +1,8 @@
 name: Static Blog
 on:
   push:
-    branched: [main]
+    tags:
+      - "v*"
 
 jobs:
   build-and-deploy:
