@@ -1,8 +1,7 @@
 ame: Static Blog
 on:
   push:
-    tags:
-      - "v*"
+    branched: [main]
 
 jobs:
   build-and-deploy:
