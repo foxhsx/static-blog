@@ -5,6 +5,10 @@ module.exports = [
     children: [
       { text: "文章变现", link: "/docs/study/notes/bookToMon" },
       { text: "如何使用阿里云搭建网站", link: "/docs/study/notes/aliyun_blog" },
+      {
+        text: "Github Actions 自动化部署",
+        link: "/docs/study/notes/github_actions",
+      },
     ],
   },
 ];
