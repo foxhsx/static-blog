@@ -17,40 +17,40 @@ git branch -M main
 
 当我们的代码上传到 github 上去之后，我们就需要去配置 `Github Actions` 的信息了。
 首先通过进入到个人中心的设置里面：
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d04e7f7176c2f981000012)
+![title](../imgs/github_settings.png)
 
 然后选择「开发者设置」：
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d04ea87176c2f981000013)
+![title](../imgs/developer_settings.png)
 
 接下来就是创建一个 `access token` （让 github actions 有权利操作仓库代码）：
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d04ee77176c2f981000014)
+![title](../imgs/access_token.png)
 
 这个生成 token 的操作，我已经有记录过了，可以看语雀那边的笔记。完成上述操作之后，就可以返回到仓库里去了。
 接下来就需要给当前仓库设置一些环境变量了。
 
 > Settings -> Secrets -> New repository secret
 
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d04f827176c2f981000015)
+![title](../imgs/lib_path.png)
 
 ##### 1. 生成 TOKEN
 
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d050807176c2f981000016)
+![title](../imgs/set_token.png)
 
 ##### 2. 生成 HOST
 
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d050e07176c2f981000017)
+![title](../imgs/set_host.png)
 
 ##### 3. 生成 USERNAME
 
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d051077176c2f981000018)
+![title](../imgs/set_username.png)
 
 ##### 4. 生成 PASSWORD
 
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d051257176c2f981000019)
+![title](../imgs/set_password.png)
 
 ##### 5. 生成 PORT
 
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d051487176c2f98100001a)
+![title](../imgs/set_port.png)
 
 完成上述配置之后，我们还需要再去配置一下 `workflows` 的脚本，它的主要作用就是在 `Github Actions` 里帮我们安装依赖并打包构建项目。
 
@@ -139,6 +139,6 @@ jobs:
 
 我们在推送代码后怎么查看 actions 状态呢？
 在仓库里，有个 `Actions` 标签，我们可以通过这个标签来进行查看。
-![title](http://note.ihsxu.com/api/file/getImage?fileId=61d075bd7176c2f98100001b)
+![title](../imgs/actions_test.png)
 
 在这里我们可以看到详细的安装打包过程，以及如果失败，失败后的日志信息等。
