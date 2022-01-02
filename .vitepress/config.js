@@ -8,14 +8,14 @@
  */
 const getPages = require("./utils/pages");
 
-const argv = require('minimist')(process.argv.slice(2))
+const argv = require("minimist")(process.argv.slice(2));
 const build = argv._[0] || false;
-const baseBuild = build ? '/' : '/';
+const baseBuild = build ? "/" : "/";
 
 async function getConfig() {
   let config = {
     title: "Coder小站",
-    description: '不积跬步无以至千里',
+    description: "不积跬步无以至千里",
     head: [
       [
         "meta",
@@ -26,24 +26,24 @@ async function getConfig() {
         },
       ],
       ["meta", { name: "keywords", content: "Coder杂谈" }],
-      ["link", { rel: "icon", href: baseBuild + "favicon.ico" }],
+      ["link", { rel: "icon", href: baseBuild + "favicon.png" }],
       // 引入 Gitalk
       [
         "link",
         { rel: "stylesheet", href: "https://unpkg.com/gitalk/dist/gitalk.css" },
       ],
-      ["script", { src: "https://unpkg.com/gitalk/dist/gitalk.min.js" }]
+      ["script", { src: "https://unpkg.com/gitalk/dist/gitalk.min.js" }],
     ],
     themeConfig: {
-      logo: baseBuild + 'favicon.ico',
+      logo: baseBuild + "favicon.png",
       pages: await getPages(),
       author: "何三金",
       search: true,
-      sidebar: require('./sidebar.js'),
-      subSidebar: 'auto',
-      introduce: '一个想再进一步的野生程序员。',
-      nav: require('./nav'),
-      authorAvatar: baseBuild + 'img/shehui.jpg',
+      sidebar: require("./sidebar.js"),
+      subSidebar: "auto",
+      introduce: "一个想再进一步的野生程序员。",
+      nav: require("./nav"),
+      authorAvatar: baseBuild + "img/shehui.jpg",
     },
     dest: "public",
     base: baseBuild,
