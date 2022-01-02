@@ -53,5 +53,9 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /var/www/html
+            rm -rf /var/www/html/*
             wget https://hub.fastgit.org/foxhsx/static-blog/releases/latest/download/release.tgz -O release.tgz
             tar zxvf release.tgz
+            cd /var/www/html/.vitepress/dist
+            mv * /var/www/html
+            rm -rf /var/www/html/.vitepress

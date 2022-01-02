@@ -73,6 +73,10 @@ module.exports = [
         link: "/docs/summary/notes/vscode_yarn",
       },
       { text: "CRA 自定义配置", link: "/docs/summary/notes/cra_customconfig" },
+      {
+        text: "换行符没有起作用",
+        link: "/docs/summary/notes/enter_newline_bug",
+      },
     ],
   },
 ];
