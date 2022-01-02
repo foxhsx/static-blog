@@ -26,7 +26,7 @@ async function getConfig() {
         },
       ],
       ["meta", { name: "keywords", content: "Coder杂谈" }],
-      ["link", { rel: "icon", href: baseBuild + "favicon.png" }],
+      ["link", { rel: "icon", href: baseBuild + "img/favicon.png" }],
       // 引入 Gitalk
       [
         "link",
@@ -35,7 +35,7 @@ async function getConfig() {
       ["script", { src: "https://unpkg.com/gitalk/dist/gitalk.min.js" }],
     ],
     themeConfig: {
-      logo: baseBuild + "favicon.png",
+      logo: baseBuild + "img/favicon.png",
       pages: await getPages(),
       author: "何三金",
       search: true,
