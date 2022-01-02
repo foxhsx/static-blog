@@ -2,10 +2,10 @@
 title: 浅拷贝
 date: 2021-03-23
 tags:
- - JavaScript
- - 面试
+  - JavaScript
+  - 面试
 categories:
- - front
+  - front
 ---
 
 图片转自[js 深拷贝 vs 浅拷贝](https://juejin.cn/post/6844903493925371917)
@@ -24,7 +24,7 @@ JavaScript 中基本数据类型有五类——`String、Number、Boolean、null
 var a = 10;
 var b = a;
 
-a ++ ;
+a++;
 console.log(a); // 11
 console.log(b); // 10
 ```
@@ -48,9 +48,9 @@ console.log(b); // 10
 引用类型是可以直接改变其值的：
 
 ```js
-var a = [1,2,3];
+var a = [1, 2, 3];
 a[1] = 5;
-console.log(a[1]);  // 5
+console.log(a[1]); // 5
 ```
 
 引用类型的比较实则是引用（指针）的比较，也就是看其引用是否指向同一个对象。
@@ -59,7 +59,7 @@ console.log(a[1]);  // 5
 var a = { tt: 1 };
 var b = { tt: 1 };
 
-console.log(a === b);   // false
+console.log(a === b); // false
 ```
 
 虽然他俩的内容都是 { tt: 1 }，但是它们在内存中的位置是不一样的，指向的不是同一个对象，所以不相等。
@@ -68,17 +68,17 @@ console.log(a === b);   // false
 
 ```js
 var a = {}; // a保存了一个空对象的实例
-var b = a;  // a和b都指向了这个空对象
+var b = a; // a和b都指向了这个空对象
 
-a.name = 'jozo';
+a.name = "jozo";
 console.log(a.name); // 'jozo'
 console.log(b.name); // 'jozo'
 
 b.age = 22;
-console.log(b.age);// 22
-console.log(a.age);// 22
+console.log(b.age); // 22
+console.log(a.age); // 22
 
-console.log(a == b);// true
+console.log(a == b); // true
 ```
 
 **浅拷贝**
@@ -90,21 +90,21 @@ console.log(a == b);// true
 JavaScript 存储对象都是存储地址的，浅拷贝导致更深一层的对象可能会指向同一个内存地址。
 
 ```js
-var obj = { a: 1, arr: [1,2,3] }
+var obj = { a: 1, arr: [1, 2, 3] };
 var copyObj = shallowCopy(obj);
 
 function shallowCopy(obj) {
-  var copy = {}
+  var copy = {};
   for (var key in obj) {
     if (obj.hasOwnProperty(key)) {
-      copy[key] = obj[key]
+      copy[key] = obj[key];
     }
   }
   return copy;
 }
 ```
 
-![](../../imgs/zhan.png)
+![](../../imgs/zhan.webp)
 
 这样会导致如果改变其中某个对象的 arr 属性，那另一个对象的也会被改变：
 
@@ -114,11 +114,13 @@ copyObj.arr[0]; // 3
 ```
 
 **实现浅拷贝的主要方法有**：
+
 1. 循环遍历——看上面 `shallowCopy` 函数；
 2. ES6 Object.assign()
    - Object.assign() 方法用于将所有可枚举属性的值从一个或多个源对象分配到目标对象。它将返回目标对象。
    - 拷贝的是对象的属性的引用，而不是对象本身。
    - 源码实现：
+
 ```js
 if (typeof Object.assign !== 'function') {
   Object.defineProperty(Object, 'assign', {
@@ -148,26 +150,29 @@ if (typeof Object.assign !== 'function') {
   })
 }
 ```
+
 3. ES6 扩展运算符
-  ```js
-  let obj2 = {...obj1};
-  ```
+
+```js
+let obj2 = { ...obj1 };
+```
+
 4. Array.from()
    ```js
-    let arr1 = [1, 2, 3, 4]
-    let arr2 = Array.from(arr1);
+   let arr1 = [1, 2, 3, 4];
+   let arr2 = Array.from(arr1);
    ```
 5. arr.slice()
    ```js
-    let arr1 = [1, 2, 3, 4]
-    let arr2 = arr1.slice();
+   let arr1 = [1, 2, 3, 4];
+   let arr2 = arr1.slice();
    ```
 6. concat 浅拷贝数组
    ```js
-    let arr = [1,2,3];
-    let newArr = arr.concat();
-    newArr[0] = 100;
-    console.log(arr); // 1,2,3
+   let arr = [1, 2, 3];
+   let newArr = arr.concat();
+   newArr[0] = 100;
+   console.log(arr); // 1,2,3
    ```
 
 下节再详谈深拷贝。

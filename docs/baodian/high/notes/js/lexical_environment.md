@@ -2,13 +2,14 @@
 title: 了解词法环境吗？它和闭包有什么联系？
 date: 2021-04-20
 tags:
- - JavaScript
- - 面试
+  - JavaScript
+  - 面试
 categories:
- - front
+  - front
 ---
 
 今天聊聊词法环境以及它跟闭包的联系：
+
 1. 什么是词法环境
 2. 跟闭包有啥联系
 
@@ -21,10 +22,12 @@ categories:
 而当每次 JavaScript 引擎创建执行上下文来执行函数或者全局代码时，就会创建一个新的词法环境，以存储在该函数执行期间在该函数中定义的变量。
 
 词法环境有两个组成部分：
+
 1. 环境记录：存储变量和函数声明的实际位置
 2. 对外部环境的引用：实际上就是对外部或者说是父级词法环境的引用。这对理解闭包是如何工作的尤为重要。
 
 我们可以下面例子理解词法环境：
+
 ```js
 lexicalEnvironment = {
   environmentRecord: {        // 环境记录
@@ -36,18 +39,20 @@ lexicalEnvironment = {
 ```
 
 来看个实际例子：
+
 ```js
-const text = 'Hello Lexical Environment'
+const text = "Hello Lexical Environment";
 
 function fn() {
-  const fnText = 'Inside Lexical Environment'
-  console.log('Inside function') 
+  const fnText = "Inside Lexical Environment";
+  console.log("Inside function");
 }
 fn();
-console.log('Inside global execution context')
+console.log("Inside global execution context");
 ```
 
 当 JavaScript 创建一个全局执行上下文来执行全局代码时，它还会创建一个新的词法环境用来存储全局范围内定义的变量和函数。所以对于这个全局的词法环境就有：
+
 ```js
 globalLexicalEnvironment = {
   environmentRecord: {
@@ -61,6 +66,7 @@ globalLexicalEnvironment = {
 这是全局作用域下的词法环境，所以外层这里是 null.
 
 而当 JavaScript 引擎为函数 fn 创建执行上下文时，它会再创建一个词法环境来存储在函数执行期间在该函数内部定义的变量。函数 fn 的词法环境如下：
+
 ```js
 functionLexicalEnvironment = {
   environmentRecord: {
@@ -83,50 +89,52 @@ functionLexicalEnvironment = {
 > 注意：通过 var 定义的变量，存在于变量环境。变量环境，我们改天再讲
 
 我们来看一个简单的例子，看看变量环境、词法环境、执行上下文（this）和通过作用域查找某个变量这样一个过程：
+
 ```js
-var global_variable1 = 'Hello';
-let global_variable2 = 'World';
+var global_variable1 = "Hello";
+let global_variable2 = "World";
 
 function fn() {
-  var inside_variable1 = 'fn';
-  let inside_variable2 = 'function';
+  var inside_variable1 = "fn";
+  let inside_variable2 = "function";
   {
-    var block_variable1 = 'var_block';
-    let block_variable2 = 'let_block';
+    var block_variable1 = "var_block";
+    let block_variable2 = "let_block";
   }
 }
 
-fn()
+fn();
 ```
 
 那实际的代码执行顺序就是：
+
 ```js
 // 全局代码的执行过程
 var global_variable1;
 let global_variable2;
-fn = function() {}
-global_variable1 = 'Hello';
-global_variable2 = 'World';
-fn()
+fn = function () {};
+global_variable1 = "Hello";
+global_variable2 = "World";
+fn();
 
 // fn 内部执行顺序
 var inside_variable1;
 let inside_variable2;
 var block_variable1;
-inside_variable1 = 'fn';
-inside_variable2 = 'function';
+inside_variable1 = "fn";
+inside_variable2 = "function";
 {
   let block_variable2;
-  block_variable1 = 'var_block';
-  block_variable2 = 'let_block';
+  block_variable1 = "var_block";
+  block_variable2 = "let_block";
 }
 ```
 
 代码在被 JavaScript 引擎编译并创建全局上下文，放入到调用栈中，如下图：
-![](../../imgs/global_environment.png)
+![](../../imgs/global_environment.webp)
 
 当全局代码执行到函数 fn 的时候，创建函数 fn 的执行上下文，放入到调用栈当中，此时：
-![](../../imgs/fn_environment.png)
+![](../../imgs/fn_environment.webp)
 
 而当代码执行到块级作用域时，块级作用域不存在编译过程，词法环境就是一个小型的栈，所以这里块级作用域的执行是将变量加入到当前 fn 环境的词法环境中去。（就懒得画图了，自行脑补）
 

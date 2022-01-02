@@ -2,13 +2,13 @@
 title: 什么是跨域？跨域的解决方案
 date: 2021-06-14 22:34:00
 tags:
- - 网络
- - 面试
+  - 网络
+  - 面试
 categories:
- - front
+  - front
 ---
 
- ## 什么是跨域问题？
+## 什么是跨域问题？
 
 这个场景其实在实际项目里很常见，就是前端调用后端接口的时候，发现前后端不在同一个域或者说端口不同，就会产生跨域问题，也就是说当前应用访问了该应用域名或端口之外的域名或者端口。
 
@@ -42,7 +42,7 @@ categories:
 
 ```js
 // 两个页面都设置
-document.domain = 'test.com';
+document.domain = "test.com";
 ```
 
 ### 2. 跨文档通信 API：window.postMessage()
@@ -59,15 +59,19 @@ document.domain = 'test.com';
 ```js
 // 父窗口向子窗口发消息
 // 第一个参数代表发送的内容，第二个参数代表接收消息窗口的url
-window.postMessage('message', 'http://study.com');
+window.postMessage("message", "http://study.com");
 ```
 
 在子页面调用 message 事件：
 
 ```js
-window.addEventListener('message', function (e) {
+window.addEventListener(
+  "message",
+  function (e) {
     // ...
-}, false)
+  },
+  false
+);
 ```
 
 ### 3. JSONP
@@ -76,18 +80,18 @@ JSONP 是服务端与客户端跨域通信的常用方法。最大的特点就�
 
 核心思想：网页通过添加一个 `script` 元素，向服务器请求 JSON 数据，服务器收到请求后，将数据放在一个指定名字的回调函数的参数位置传回来。
 
-①原生实现：
+① 原生实现：
 
 ```html
 <script src="http://test.com/data.php?callback=dosomething"></script>
-// 向服务器test.com发出请求，该请求的查询字符串有一个callback参数，用来指定回调函数的名字
- 
+//
+向服务器test.com发出请求，该请求的查询字符串有一个callback参数，用来指定回调函数的名字
 // 处理服务器返回回调函数的数据
 <script type="text/javascript">
-    function dosomething(res){
-        // 处理获得的数据
-        console.log(res.data)
-    }
+  function dosomething(res) {
+    // 处理获得的数据
+    console.log(res.data);
+  }
 </script>
 ```
 
@@ -95,82 +99,84 @@ JSONP 是服务端与客户端跨域通信的常用方法。最大的特点就�
 
 ```js
 $.ajax({
-    url: 'http://www.test.com:8080/login',
-    type: 'get',
-    dataType: 'jsonp',  // 请求方式为jsonp
-    jsonpCallback: "handleCallback",    // 自定义回调函数名
-    data: {}
+  url: "http://www.test.com:8080/login",
+  type: "get",
+  dataType: "jsonp", // 请求方式为jsonp
+  jsonpCallback: "handleCallback", // 自定义回调函数名
+  data: {},
 });
 ```
 
 ③ Vue.js
 
 ```js
-this.$http.jsonp('http://www.domain2.com:8080/login', {
+this.$http
+  .jsonp("http://www.domain2.com:8080/login", {
     params: {},
-    jsonp: 'handleCallback'
-}).then((res) => {
-    console.log(res); 
-})
+    jsonp: "handleCallback",
+  })
+  .then((res) => {
+    console.log(res);
+  });
 ```
 
 ### 4. CORS 跨域资源分享
 
 CORS 是跨域资源分享（Cross-Origin Resource Sharing）的缩写。它是 W3C 标准，属于跨源 AJAX 请求的根本解决方法。
 
-**1、普通跨域请求：只需服务器端设置Access-Control-Allow-Origin**
+**1、普通跨域请求：只需服务器端设置 Access-Control-Allow-Origin**
 
-**2、带cookie跨域请求：前后端都需要进行设置**
+**2、带 cookie 跨域请求：前后端都需要进行设置**
 
-**【前端设置】**根据xhr.withCredentials字段判断是否带有cookie
+**【前端设置】**根据 xhr.withCredentials 字段判断是否带有 cookie
 
-①原生ajax
+① 原生 ajax
 
 ```js
 var xhr = new XMLHttpRequest(); // IE8/9需用window.XDomainRequest兼容
- 
+
 // 前端设置是否带cookie
 xhr.withCredentials = true;
- 
-xhr.open('post', 'http://www.domain2.com:8080/login', true);
-xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-xhr.send('user=admin');
- 
-xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-        alert(xhr.responseText);
-    }
+
+xhr.open("post", "http://www.domain2.com:8080/login", true);
+xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+xhr.send("user=admin");
+
+xhr.onreadystatechange = function () {
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    alert(xhr.responseText);
+  }
 };
 ```
 
-② jQuery ajax 
+② jQuery ajax
 
 ```js
 $.ajax({
-   url: 'http://www.test.com:8080/login',
-   type: 'get',
-   data: {},
-   xhrFields: {
-       withCredentials: true    // 前端设置是否带cookie
-   },
-   crossDomain: true,   // 会让请求头中包含跨域的额外信息，但不会含cookie
+  url: "http://www.test.com:8080/login",
+  type: "get",
+  data: {},
+  xhrFields: {
+    withCredentials: true, // 前端设置是否带cookie
+  },
+  crossDomain: true, // 会让请求头中包含跨域的额外信息，但不会含cookie
 });
 ```
 
-③ axios 
+③ axios
 
 ```js
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true;
 ```
 
 ### 5. 代理跨域请求
 
 实现原理：同源策略是浏览器需要遵循的标准，而如果是请求都发给代理服务器代理服务器再向后端服务器请求就可以规避跨域的问题。
 
-![](../../imgs/proxy.png)
+![](../../imgs/proxy.webp)
 
-例如用nginx做代理服务器。
- nginx配置
+例如用 nginx 做代理服务器。
+nginx 配置
 
 ```shell
 server{
@@ -181,7 +187,7 @@ server{
     #凡是localhost:8080/api这个样子的，都转发到真正的服务端地址http://localhost:8080
     location ^~ /api {
         proxy_pass http://localhost:8080;
-    }    
+    }
 }
 ```
 
@@ -192,4 +198,3 @@ server{
 ### 7. websocket
 
 websocket 是 Html5 一种新的协议，基于该协议可以做到浏览器与服务器全双工通信，允许跨域请求
-

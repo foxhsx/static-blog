@@ -2,13 +2,14 @@
 title: CSS 盒模型有哪些？
 date: 2021-04-19
 tags:
- - CSS
- - 面试
+  - CSS
+  - 面试
 categories:
- - front
+  - front
 ---
 
 阅读前先带几个问题：
+
 1. 什么是 CSS 盒模型
 2. 有哪些盒模型？
 3. 各自的差异？
@@ -37,7 +38,7 @@ CSS 盒模型本质上是一个盒子，将所有元素表示为一个个矩形�
 
 在怪异盒模型中，`width` 指的是内容区域 content 的宽度加上边框和内边距的宽度，height 指的是 content 的高度加上边框和内边距的高度，盒子大小等于：width(border + padding + content) + margin。
 
-![](../../imgs/IE_boxmodel.jpg)
+![](../../imgs/IE_boxmodel.webp)
 
 在 CSS3 中，我们通过设置 `box-sizing` 属性来指定盒模型类型。
 
