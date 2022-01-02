@@ -53,5 +53,5 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /var/www/html
-            wget https://github.com/foxhsx/static-blog/releases/latest/download/release.tgz -O release.tgz
+            wget https://hub.fastgit.org/foxhsx/static-blog/releases/latest/download/release.tgz -O release.tgz
             tar zxvf release.tgz
