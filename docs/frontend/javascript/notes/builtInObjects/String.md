@@ -2,9 +2,9 @@
 title: JavaScript内置对象——String字符串
 date: 2020-12-2
 tags:
- - JavaScript
+  - JavaScript
 categories:
- - front
+  - front
 ---
 
 :flags:**学习目标：**
@@ -16,20 +16,20 @@ categories:
 语法：
 
 ```javascript
-string.charAt(index)
+string.charAt(index);
 ```
 
 功能：返回 string 中 index 位置的字符。
 
 说明：
 
-ECMAScript5中可使用“方括号加字符索引”来访问字符串中特定的字符，但是IE7及更早的浏览器会返回 undefined.
+ECMAScript5 中可使用“方括号加字符索引”来访问字符串中特定的字符，但是 IE7 及更早的浏览器会返回 undefined.
 
 ```javascript
-var str = 'hello world';
-console.log(str[1]);  // e
-console.log(str.charAt(0));  // h
-console.log(str.charAt(15));  // ''  取不到返回一个空字符串
+var str = "hello world";
+console.log(str[1]); // e
+console.log(str.charAt(0)); // h
+console.log(str.charAt(15)); // ''  取不到返回一个空字符串
 ```
 
 ## **二、charCodeAt()**
@@ -37,14 +37,14 @@ console.log(str.charAt(15));  // ''  取不到返回一个空字符串
 语法：
 
 ```javascript
-string.charCodeAt(index)
+string.charCodeAt(index);
 ```
 
 功能：返回 string 中 index 位置字符的字符编码。
 
 ```javascript
-var str = 'hello world';
-console.log(str.charCodeAt(4));  // o 的字符编码为 111
+var str = "hello world";
+console.log(str.charCodeAt(4)); // o 的字符编码为 111
 ```
 
 ## **三、indexOf()**
@@ -52,7 +52,7 @@ console.log(str.charCodeAt(4));  // o 的字符编码为 111
 语法：
 
 ```javascript
-string.indexOf('o')
+string.indexOf("o");
 ```
 
 功能：从一个字符串中搜索给定的子字符串，返回子字符串的位置。只检测第一次出现的位置。
@@ -62,10 +62,10 @@ string.indexOf('o')
 说明：如果没有找到该子字符串，则返回 -1.
 
 ```javascript
-var str = 'hello world';
-console.log(str.indexOf('r'));  // 8
-console.log(str.indexOf('x'));  // -1
-console.log(str.indexOf('ll'));  // 2 检测一个子串  第一个 l 出现的位置
+var str = "hello world";
+console.log(str.indexOf("r")); // 8
+console.log(str.indexOf("x")); // -1
+console.log(str.indexOf("ll")); // 2 检测一个子串  第一个 l 出现的位置
 ```
 
 ## **四、lastIndexOf()**
@@ -73,7 +73,7 @@ console.log(str.indexOf('ll'));  // 2 检测一个子串  第一个 l 出现的�
 语法：
 
 ```javascript
-string.lastIndexOf('o')
+string.lastIndexOf("o");
 ```
 
 功能：从一个字符串中搜索给定的子字符串，返回子字符串的位置。只检测第一次出现的位置且是从右向左检测。但是下标还是要从左开始。
@@ -83,10 +83,10 @@ string.lastIndexOf('o')
 说明：如果没有找到该子字符串，则返回 -1.
 
 ```javascript
-var str = 'hello world';
-console.log(str.lastIndexOf('r'));  // 8
-console.log(str.lastIndexOf('x'));  // -1
-console.log(str.lastIndexOf('ll'));  // 2 检测一个子串  第一个 l 出现的位置
+var str = "hello world";
+console.log(str.lastIndexOf("r")); // 8
+console.log(str.lastIndexOf("x")); // -1
+console.log(str.lastIndexOf("ll")); // 2 检测一个子串  第一个 l 出现的位置
 ```
 
 ## **五、slice()**
@@ -94,7 +94,7 @@ console.log(str.lastIndexOf('ll'));  // 2 检测一个子串  第一个 l 出现
 语法：
 
 ```javascript
-string.slice(start, end)
+string.slice(start, end);
 ```
 
 功能：
@@ -122,19 +122,19 @@ console.log(str.slice(-7， -2));  // o wor
 说明：语法及功能同 slice() 完全一样
 
 ```javascript
-var str = 'hello world';
-console.log(str.substring(1,4));  // ell
-console.log(str.substring(-7,5));  // hello
-console.log(str.substring(-7,-5));  // ''
-console.log(str.substring(2,-5));  // hel
+var str = "hello world";
+console.log(str.substring(1, 4)); // ell
+console.log(str.substring(-7, 5)); // hello
+console.log(str.substring(-7, -5)); // ''
+console.log(str.substring(2, -5)); // hel
 ```
 
 ::: tip
 
 区别：
 
-1. 当参数为负数时，自动将参数转换为0
-2.  substring() 会将较小的数作为开始位置，将较大的数作为结束位置。
+1. 当参数为负数时，自动将参数转换为 0
+2. substring() 会将较小的数作为开始位置，将较大的数作为结束位置。
 
 :::
 
@@ -143,7 +143,7 @@ console.log(str.substring(2,-5));  // hel
 语法：
 
 ```javascript
-string.substr(start,len)
+string.substr(start, len);
 ```
 
 功能：截取字符串。
@@ -156,10 +156,10 @@ string.substr(start,len)
 4. 当 len 为负数时，返回空字符串。
 
 ```javascript
-var str = 'hello world';
-console.log(str.substr(6,3));  // wor
-console.log(str.substr(-5,4));  // worl
-console.log(str.substr(3,-5));  // ''
+var str = "hello world";
+console.log(str.substr(6, 3)); // wor
+console.log(str.substr(-5, 4)); // worl
+console.log(str.substr(3, -5)); // ''
 ```
 
 ## **八、split()**
@@ -167,7 +167,7 @@ console.log(str.substr(3,-5));  // ''
 语法：
 
 ```javascript
-string.split(separator)
+string.split(separator);
 ```
 
 功能：把一个字符串分割成字符串数组。
@@ -179,10 +179,10 @@ string.split(separator)
 - separator：必需，分隔符
 
 ```javascript
-var str = 'welcome-to-xian';
+var str = "welcome-to-xian";
 // 使用 split 将 str 转换为数组
-var arr = str.split('-');
-console.log(arr);  // ['welcome', 'to', 'xian']
+var arr = str.split("-");
+console.log(arr); // ['welcome', 'to', 'xian']
 ```
 
 ## **九、replace()**
@@ -190,7 +190,7 @@ console.log(arr);  // ['welcome', 'to', 'xian']
 语法：
 
 ```javascript
-string.replace(regexp/subtr, replacement)
+string.replace(regexp / subtr, replacement);
 ```
 
 功能：在字符串中用一些字符替换另一些字符，或替换一个与正则表达式匹配的字符串。
@@ -203,10 +203,10 @@ string.replace(regexp/subtr, replacement)
 - replacement：必需。一个字符串值。
 
 ```javascript
-var tel = '010-62971268,400-100-9098,010-86789889';
-var newTel = tel.replace(',', '')
-console.log(newTel);  // 010-62971268400-100-9098,010-86789889
-console.log(tel);     // 010-62971268,400-100-9098,010-86789889
+var tel = "010-62971268,400-100-9098,010-86789889";
+var newTel = tel.replace(",", "");
+console.log(newTel); // 010-62971268400-100-9098,010-86789889
+console.log(tel); // 010-62971268,400-100-9098,010-86789889
 ```
 
 ::: tip
@@ -216,12 +216,12 @@ console.log(tel);     // 010-62971268,400-100-9098,010-86789889
 
 :::
 
-## **十、toUpperCase()和toLowerCase()**
+## **十、toUpperCase()和 toLowerCase()**
 
 语法：
 
 ```javascript
-string.toUpperCase()
+string.toUpperCase();
 ```
 
 功能：把字符串转换为大写。
@@ -229,16 +229,14 @@ string.toUpperCase()
 说明：并没有改变原字符串
 
 ```javascript
-var str = 'hello world';
-console.log(str.toUpperCase());  // HELLO WORLD
+var str = "hello world";
+console.log(str.toUpperCase()); // HELLO WORLD
 ```
-
-
 
 语法：
 
 ```javascript
-string.toLowerCase()
+string.toLowerCase();
 ```
 
 功能：把字符串转换为小写。
@@ -246,12 +244,12 @@ string.toLowerCase()
 说明：并没有改变原字符串
 
 ```javascript
-var str = 'HELLO WORLD';
-console.log(str.toLowerCase());  // hello world
+var str = "HELLO WORLD";
+console.log(str.toLowerCase()); // hello world
 ```
 
 ## **附加、字符串面试题**
 
-[编写 js 函数，用于获得输入参数的后缀名，如输入 abc.txt，返回 .txt。](../../../../baodian/zero/JavaScript/notes/String.html)
+[编写 js 函数，用于获得输入参数的后缀名，如输入 abc.txt，返回 .txt。](../../../../face/zero/JavaScript/notes/String.html)
 
-[编写一个转换驼峰形式的函数](../../../../baodian/zero/JavaScript/notes/cameback.html)
+[编写一个转换驼峰形式的函数](../../../../face/zero/JavaScript/notes/cameback.html)
