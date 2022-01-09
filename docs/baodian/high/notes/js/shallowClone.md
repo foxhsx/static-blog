@@ -10,7 +10,7 @@ categories:
 
 图片转自[js 深拷贝 vs 浅拷贝](https://juejin.cn/post/6844903493925371917)
 
-![](../../imgs/copy.jpg)
+![](../../imgs/copy.webp)
 
 我们平常说的深拷贝和浅拷贝都是基于对诸如 `Object` 和 `Array` 等引用数据类型的拷贝。对于基本数据而言，拷贝为某个值的赋值。
 
