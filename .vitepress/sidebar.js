@@ -22,4 +22,5 @@ module.exports = {
   "/books/": require("../docs/books/sidebar"),
   "/summary/": require("../docs/summary/sidebar"),
   "/other/": require("../docs/other/sidebar"),
+  "/cloud/": require("../docs/cloud/sidebar"),
 };

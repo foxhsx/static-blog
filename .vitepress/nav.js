@@ -48,6 +48,10 @@ module.exports = [
         text: "读书",
         link: "/docs/books/",
       },
+      {
+        text: "云原生",
+        link: "/docs/cloud/",
+      },
     ],
   },
   { text: "📅 归档", link: "/docs" },

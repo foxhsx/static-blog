@@ -34,7 +34,7 @@ function throttle(fn, time) {
     if (!flag) return;
     flag = false;
     setTimeout(() => {
-      fn.apply(fn, arguments);
+      fn.apply(this, arguments);
       flag = true;
     }, time);
   };
