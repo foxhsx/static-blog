@@ -522,6 +522,310 @@ Layers: [
 
 最终，这 7 个层都被联合挂载到 `/var/lib/docker/aufs/mnt` 目录下，表现为一个完整的 Ubuntu 操作系统供容器使用。
 
+### 重新认识 Docker 容器
+
+在开始实践之前，我们需要准一台 Linux 机器，并且安装 Docker。
+
+我们即将在这个 Docker 上部署一个用 Python 编写的 Web 应用。主要用到的文件有以下几个：
+
+- App.py
+- 应用依赖文件——同目录下的 `requirements.txt` 
+- Docker 官方提供的制作容器的方式——Dockerfile
+
+```python
+# app.py
+From flask import Flask
+import socket
+
+app = Flask(__name__)
+
+@app.route('/')
+
+def hello():
+  	html = "<h3>Hello {name}!</h3>" \
+    			 "<b>Hostname:</b> {hostname}</br>"
+    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname())
+  
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=80)
+```
+
+在这段代码中，我们使用 Flask 框架启动了一个 Web 服务器，它的功能就是在当前环境中如果有 “NAME” 这个环境变量，就把它打印在 “Hello“ 后，否则就打印出 `Hello world` ，最后再打印出当前环境的 hostname。
+
+```txt
+# requirements.txt
+Flask
+```
+
+```shell
+# dockerfile
+# 使用官方提供的 Python 开放镜像作为基础镜像
+FROM python:2.7-slim
+
+# 将工作目录切换为 /app
+WORKDIR /app
+
+# 将当前目录下的所有内容复制到 /app 下
+ADD . /app
+
+# 使用 pip 命令安装这个应用所需要的依赖
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+# 允许外界访问容器的 80 端口
+EXPOSE 80
+
+# 设置环境变量
+ENV NAME World
+
+# 设置容器进程为 python app.py 即：这个 Python 应用的启动命令
+CMD ["python", "app.py"]
+```
+
+可以看到，Dockerfile 都是使用一些标准的原语（即大写高亮的词语），描述我们所要构建的 Docker 镜像。并且这些原语，都是按照顺序进行处理的。
+
+比如 FROM 原语，指定了 `python:2.7-slim` 这个官方维护的基础镜像，从而免去了安装 `Python` 等语言环境的操作。否则，这一段就需要这么写了：
+
+```shell
+FROM ubuntu:latest
+RUN apt-get update -yRUN apt-get install -y python-pip python-dev build-essential
+```
+
+其中，RUN 原语就是在容器里执行 shell 命令的意思。
+
+而 WORKDIR，意思是在这一句之后，Dockerfile 后面的操作都以这一句指定的 `/app` 目录作为当前目录。
+
+所以，到了最后的 CMD，意思是 Dockerfile 指定 `python app.py` 为这个容器的进程。这里，app.py 的实际路径是 `/app/app.py` 。所以，`CMD ["python", "App.py"]` 等价于 `docker run python app.py`。 
+
+另外，在使用 Dockerfile 时，我们可能还会看到一个叫做 ENTRYPOINT 的原语。实际上，它和 CMD 都是 Docker 容器进程启动必需的参数，完整执行格式是：`ENTRYPOINT CMD` 。
+
+但是，默认情况下，Docker 会为我们提供一个隐含的 ENTRYPOINT，即：`/bin/sh -c` 。所以，在不指定 ENTRYPOINT 时，比如在我们的例子里，实际上运行在容器里的完整进程是 `/bin/sh -c "python app.py"` ，即 CMD 的内容就是 ENTRYPOINT 的参数。
+
+需要注意的是，Dockerfile 里的原语并不都是指对容器内部的操作。比如 ADD，它指的是把当前目录（即 Dockerfile 所在的目录）里的文件，复制到指定容器的目录中。
+
+接下来我们将刚刚看到的脚本内容，保存到当前目录下的一个名叫 `Dockerfile` 的文件中。
+
+然后开始使用 Docker 来制作镜像，咱们在当前目录执行：
+
+```shell
+docker build -t hellworld .
+```
+
+其中，这个 `-t` 的作用是给这个镜像加一个 Tag，即起一个容器记住的名字。`docker build` 会自动加载当前目录下的 Dockerfile 文件，然后按照顺序，执行文件中的原语。而在这个过程，实际上可以等同于 Docker 使用基础镜像启动了一个容器，然后在容器中依次执行 Dockerfile 中的原语。
+
+**需要注意的是，Dockerfile 中的每个原语执行后，都会生成一个对应的镜像层。**即时原语本身并没有明显地修改文件的操作（比如，ENV 原语），它对应的镜像层也会存在。只不过在外界看来是个空目录而已。
+
+我们在 build 完成之后，使用下这个镜像，通过 docker run 命令来启动容器：
+
+```shell
+docker run -p 4000:80 helloworld
+```
+
+大家注意到，在这一句命令中，我们在镜像名称 helloworld 后面，什么都没有写。这是因为我们在 Dockerfile 中已经指定了 CMD。不然的话，我们还需要将进程的启动命令加在后面，类似这样：
+
+```shell
+docker run -p 4000:80 helloworld python app.py
+```
+
+那启动之后，我们就可以使用 `docker ps` 来查看正在运行的容器了：
+
+```shell
+$ docker ps 
+CONTAINER ID		IMAGE				COMMAND						CREATED
+xxxxx						hellworld   "python app.py"		10 seconds ago
+```
+
+而这时，我们也可以通过访问宿主机 4000 端口，来看容器内应用返回的结果：
+
+```shell
+$ curl http://localhost:4000
+<h3>Hello World!</h3><b>Hostname:</b> xxxxx<br/>
+```
+
+> 这是我们映射端口的好处就显而易见了，不然就需要先用 `docker inspect` 来查看容器的 IP 地址，然后访问 `http://[container IP]:80` 才可以看到容器内应用的返回。
+
+接下来我们要做的，是想要把这个容器的镜像上传到 DockerHub 上分享给更多的人，那需要怎么做呢？
+
+1. 注册一个 Docker Hub 账号，然后使用 docker login 命令登陆
+2. 使用 `docker tag` 命令给容器镜像起一个代表性的名称
+
+```shell
+$ docker tag hellworld [dockerhub_name]/[image_name]:[version]
+```
+
+`docker hub_name` 就是咱们在 Docker Hub 上的用户名，而它的学名叫做“镜像仓库”。
+
+最后，执行 `docker push` 将镜像推送到 Dockerhub 仓库中去：
+
+```shell
+$ docker push [dockerhub_name]/[image_name]:[version]
+```
+
+此外，我们还可以使用 `docker commit` 指令，把一个正在运行的容器，直接提交为一个镜像。一般来说，需要这么操作的原因是：这个容器运行起来后，我们又在里面做了一些操作，并且要把这些操作保存在镜像里，比如：
+
+```shell
+$ docker exec -it 4fsdfsde32d /bin/sh
+# 在容器中新建了一个文件
+root@4fsdfsde32d:/app# touch test.txt
+root@4fsdfsde32d:/app# exit
+
+# 将这个新建的文件提交到镜像中保存
+$ docker commit 4fsdfsde32d geektime/helloworld:v2
+```
+
+我们在上面一段脚本中，使用了 `docker exec` 命令进入到了容器中。在了解了 Linux Namespace 的隔离机制后，我们需要思考的一个问题： 
+
+<p style="color: orange">docker exec 是怎么做到进入容器里的呢？</p>
+
+实际上，Linux Namespace 创建的隔离空间虽然看不见摸不着，但一个进程的 Namespace 信息在宿主机上确确实实存在，并且是以一个文件的方式存在。
+
+比如，通过以下指令，我们可以看到当前正在运行的 Docker 容器的进程号（PID）是 25686:
+
+```shell
+$ docker inspect --format '{{.State.Pid}}' 4fsdfsde32d
+25686
+```
+
+然后通过查看宿主机的 proc 文件，看到这个 25686 进程的所有 Namespace 对应的文件：
+
+```shell
+$ ls -l /proc/25686/ns
+total 0
+
+```
+
+可以看到的是，一个进程的每种 Linux Namespace，都在它对应的 `/proc/[进程号]/ns` 下有一个对应的虚拟文件，并且链接到一个真实的 Namespace 文件上。
+
+有了这样一个可以掌握所有 Linux Namespace 的文件，我们就可以对 Namespace 做一些有意义的事情了。比如：加入到一个已经存在的 Namespace 中。
+
+> 加入到某个进程已有的 Namespace 中，我们可以理解为进入到这个进程所在的容器，这就是 docker exec 的实现原理
+
+而这个操作所依赖的，是一个名叫 `setns()` 的 Linux 系统调用。它的调用方法，我们可以通过一段小程序来说明：
+
+```shell
+#define _GNU_SOURCE
+#include <fcntl.h>
+#include <sched.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#define errExit(msg) do { perror(msg); exit(EXIT_FAILURE); } while (0)
+
+int main(int argc, char *argv[]) {
+	int fd;
+	
+	fd = open(argv[1], O_RDONLY);
+	if (setns(fd, 0) == -1) {
+		errExit("setns");
+	}
+	execvp(argv[2], &argv[2]);
+	errExit("execvp")
+}
+```
+
+这段代码功能非常简单：它一共接收两个参数，第一个参数是 argv[1]，即当前进程要加入的 Namespace 文件的路径，比如 `/proc/25686/ns/net` ；而第二个参数，则是你要在这个 Namespace 里运行的进程，比如 `/bin/bash` 。
+
+我们来编译执行以下这个程序，加入到容器进程（PID=25686）的 Network Namespace 中：
+
+```shell
+$ gcc -o set_ns set_ns.c
+$ ./set_ns /proc/25686/ns/net /bin/bash
+$ ifconfig
+
+```
+
+在结果出来的一霎那，如果不明白此时发生了什么，肯定是一脸懵逼的，因为我们执行 `ifconfig` 指令查看网络设备的时候，发现网卡“变少”了！只有两个了，而宿主机应该至少有四个网卡的，这是怎么回事呢？
+
+实际上，在 `setns()` 之后我们看到的这两个网卡，其实是启动的 Docker 容器里的网卡。也就是说，我们新创建的这个 `/bin/bash` 进程，由于加入到了该容器进程（PID=25686）的 Network Namespace，那么它看到的网络设备就会和这个容器里的是一样的。
+
+也就是说，`/bin/bash` 进程的网络设备视图，也被修改了。
+
+而这个加入到其他 Namespace 的进程，在宿主机的 Namespace 文件上，也会有体现：
+
+```shell
+# 在宿主机上，找到这个进程的 PID
+$ ps aux | grep /bin/bash
+root	28499 0.0		0.0		19944 	3612	pts/0		S		14:15		0:00  /bin/bash
+
+# 根据这个 PID 去查看 PID=28499 的 Namespace 
+$ ls -l /proc/28499/ns/net
+lrwxrwxrwx  root	1	root	0	Aug	13	14:18	/proc/28499/ns/net	->	net:[4026532281]
+
+$ ls -l /proc/25686/ns/net
+lrwxrwxrwx	1	root	root	0	Aug	13	14:05	/proc/25686/ns/net	->	net:[4026532281]
+```
+
+可以看到这两个不同的 PID 指向的 Network Namespace 文件完全一样。这说明它们俩共享了这个名为 `net:[4026832281]` 的 Network Namespace。
+
+此外，Docker 还专门提供了一个参数，可以让我们启动一个容器的同时加入到另一个容器的 Network Namespace 里，这个参数就是 `--net` ，比如：
+
+```shell
+$ docker run -it --net container:4dsdsa7823xs busybox ifconfig
+```
+
+这样，我们新启动的这个容器，就会直接加入到 ID=4dsdsa7823xs 的容器，也就是我们前面创建的 Python 应用容器（PID = 25686）的 Network Namespace 中。所以，这里 ifconfig 返回的网卡信息，跟我们前面那个小程序返回的结果是一模一样的。
+
+如果我们这里指定 `--net=host` ，意味着什么呢？此时这个容器不会为进程启用 Network Namespace。这就相当于容器将 Network Namespace 这堵墙给拆掉了。所以，它会和宿主机上的其他普通进程一样，直接共享宿主机的网格线。这就为容器直接操作和使用宿主机网络提供了一个渠道。
+
+> 这种通过操作系统进程相关的只是，逐步剖析 Docker 容器的方法，是理解容器的一个关键思路
+
+我们接着前面说的 `docker commit` 指令，它实际上就是在容器运行起来之后，把最上层的“可读写层”，加上原先容器镜像的只读层，打包组成一个新的镜像。
+
+> 下面的那些只读层在宿主机上是共享的，不会占用额外的空间。
+
+而由于使用了联合文件系统，我们在容器里对镜像的操作，都会被操作系统先复制到这个可读写层，然后再修改。这就是所谓的：`Copy-on-Write` 。
+
+而前面提到的 Init 层的存在，就是为了避免我们在执行 `docker commit` 的时候，把 Docker 自己对 `/etc/hosts` 等文件做的修改，也一起提交掉。
+
+<strong style="color: orange;font-size: 24px;">Volume 数据卷</strong>
+
+来思考两个问题：
+
+1. 容器里进程新建的文件，怎么才能让宿主机也能获取到？
+2. 宿主机上的文件和目录，怎么才能让容器里的进程也可以访问到？
+
+而这俩问题正是 Docker Volume 要解决的。它允许我们将宿主机上指定的目录或者文件，挂载到容器里进行读取和修改操作。
+
+支持三种挂载方式：
+
+- 具名挂载
+- 匿名挂载
+- 指定文件路径
+
+而这三种声明方式的本质，实际上都是相同的：都是把一个宿主机的目录挂载到容器里的指定目录。
+
+只不过，对于匿名挂载来说，由于在挂载时没有显示声明宿主机目录，所以 Docker 会默认在宿主机上创建一个临时目录：`/var/lib/docker/volumes/[VOLUME_ID]/_data`，然后把它挂载到容器的指定目录上。而指定文件路径，Docker 会直接把宿主机的文件目录挂载到容器内的指定目录上去。具名挂载处于这两个中间，它相比匿名挂载而言，存储目录上的 VOLUME_ID 会变成我们指定的名称。
+
+那么，Docker 又是如何做到把一个宿主机上的目录或者文件，挂载到容器里面去呢？
+
+当容器进程被创建之后，尽管开启了 Mount Namespace，但是在它执行 chroot（或者 pivot_root）之前，容器进程一直可以看到宿主机上的整个文件系统。
+
+而宿主机上的文件系统，也自然包括了我们要使用的容器镜像。这个镜像的各个层，保存在 `/var/lib/docker/aufs/diff` 目录下，在容器进程启动后，就会被联合挂载在 `/var/lib/docker/aufs/mnt/` 目录中，这样容器所需的 rootfs 就准备好了。
+
+所以，接下来我们只需要在 rootfs 准备好之后，在执行 chroot 之前，把 Volume 指定的宿主机目录（比如 `/home` 目录），挂载到指定的容器目录（比如 `/test` 目录）在宿主机上对应的目录（即 `/var/lib/docker/aufs/mnt/[可读写层 ID]/test`）上，这个 Volume 的挂载工作就完成了。
+
+而由于执行这个挂载操作时，容器进程已经创建了，这就意味着此时 Mount Namespace 已经开启了。所以，这个挂载事件只在这个容器里可见。在宿主机上是看不见容器内部的这个挂载点的。这就保证了容器的隔离型不会被 Volume 打破。
+
+> 注意：这里提到的容器进程，是 Docker 创建的一个容器初始化进程（dockerinit），而不是应用进程（ENTRYPOINT + CMD）。dockerinit 会负责完成根目录的准备、挂载设备和目录、配置 hostname 等一系列需要在容器内进行的初始化操作。最后，它通过 execv() 系统调用，让应用进程取代自己，成为容器里的 PID = 1 的进程。
+
+那这里要使用到的挂载技术，就是 Linux 的绑定挂载（Bind Mount）机制。它的主要作用就是，允许你将一个目录或者文件，而不是整个设备，挂载到一个指定的目录上。并且，这时我们在挂载点上进行的任何操作都会发生在被挂载的目录或者文件上，而原挂载点的内容则会被隐藏起来而不受影响。
+
+> 了解 Linux 内核的话，就会明白，绑定挂载实际上是一个 inode 替换的过程。在 Linux 操作系统中，inode 可以理解为存放文件内容的“对象”，而 dentry，也叫目录项，就是访问这个 inode 所使用的“指针”
+
+![image-20220119113410375](../imgs/inode.png)
+
+如图，`mount --bind /home /test`，会将 `/home` 挂载到 `/test` 上。其实相当于将 `/test` 的 dentry，重定向到了 `/home` 的 inode。这样当我们修改 `/test` 目录时，实际上修改的是 `/home` 目录的 inode。这也是为何，一旦执行 umount 命令，`/test` 目录原先的内容就会恢复：因为修改真正发生的，是在 `/home` 目录里。
+
+所以，在一个正确的时机，进行一次绑定挂载，Docker 就可以成功地将一个宿主机上的目录或者文件，不动声色地挂载到容器中。
+
+这样，进程在容器里对这个 `/test` 目录进行的所有操作，都实际发生在宿主机的对应目录里，而不会影响容器镜像的内容。
+
+且这个 `/test` 目录里的内容，也不会被 `docker commit` 提交掉。
+
+> 这是因为容器的镜像操作，比如 `docker commit` ，都是发生在宿主机空间的。而由于 Mount Namespace 的隔离作用，宿主机并不知道这个绑定挂载的存在。所以在宿主机看来，容器中可读写层的 `/test` 目录，始终是空的。
+>
+> 但是，因为我们一开始执行 Docker 的挂载的时候会创建 `/test` 这个目录作为挂载点，所以在 `docker commit` 之后，你会发生新产生的镜像里，会多出来一个空的 `/test` 目录。毕竟，新建目录操作，又不是挂载操作，Mount Namespace 对它起不到障眼法的作用。
+
 ### 总结
 
 通过上述的讲解，我们可以理解，一个正在运行的 Docker 容器，其实就是一个启用了多个 Linux Namespace 的应用进程，而这个进程能够使用的资源量，是受 Cgroups 配置的限制。
@@ -541,3 +845,15 @@ Layers: [
 Linux 容器文件系统的实现方式就是我们经常提到的容器镜像，也叫做：rootfs。它只是一个操作系统的所有文件和目录，并不包含内核，所以体积很小。
 
 在此基础上，Docker 公司提出了使用多个增量 rootfs 联合挂载一个完整 rootfs 的方案，这就是容器镜像中**层** 的概念。
+
+最后的 Docker 容器，我们实际上就可以用下面这个全景图来描述：
+
+![](../imgs/docker-container.png)
+
+这个容器进程 `python app.py`，运行在由 Linux Namespace 和 Cgroups 构成的隔离环境里；而它运行所需要的各种文件，比如 `python`，`app.py` ，以及整个操作系统文件，则由多个联合挂载在一起的 rootfs 层提供。
+
+这些 rootfs 层的最下层，是来自 Docker 镜像的只读层。
+
+在只读层之上，是 Docker 自己添加的 Init 层，用来存放被临时修改过的 `/etc/hosts` 等文件。
+
+而 roots 的最上层是一个可读写层，它以 Copy-on-Write 的方式存放任何对只读层的修改，容器声明的 Volume 的挂载点，也出现在这一层。

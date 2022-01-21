@@ -4,6 +4,14 @@ module.exports = [
     children: [
       { text: "1.小鲸鱼大事记", link: "/docs/books/kubernetes/part_1" },
       { text: "2.白话容器基础", link: "/docs/books/kubernetes/part_2" },
+      {
+        text: "3.谈谈 Kubernetes 的本质",
+        link: "/docs/books/kubernetes/part_3",
+      },
+      {
+        text: "4.一键部署 K8S 利器：kubeadm",
+        link: "/docs/books/kubernetes/part_4",
+      },
     ],
   },
 ];
