@@ -12,6 +12,10 @@ module.exports = [
         text: "4.一键部署 K8S 利器：kubeadm",
         link: "/docs/books/kubernetes/part_4",
       },
+      {
+        text: "5.搭建一个完整的 K8S 集群",
+        link: "/docs/books/kubernetes/part_5",
+      },
     ],
   },
 ];
