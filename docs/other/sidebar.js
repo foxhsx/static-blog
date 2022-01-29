@@ -1,6 +1,6 @@
 module.exports = [
   {
-    text: "随笔",
+    text: "生活",
     collapsable: true,
     path: "/docs/other/",
     children: [

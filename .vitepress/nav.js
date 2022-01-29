@@ -9,9 +9,8 @@ module.exports = [
       { text: "Vue", link: "/docs/frontend/vue/" },
       { text: "React", link: "/docs/frontend/react/" },
       { text: "Webpack", link: "/docs/frontend/webpack/" },
-      { text: "Engineering", link: "/docs/frontend/Engineering/" },
-      // { text: 'node', link: '/face/zero/' }
-      { text: "Dried", link: "/docs/summary/" },
+      { text: "前端工程化", link: "/docs/frontend/Engineering/" },
+      { text: "干货", link: "/docs/summary/" },
     ],
   },
   {
@@ -25,29 +24,19 @@ module.exports = [
       { text: "Webpack篇", link: "/docs/face/faceWebpack/" },
     ],
   },
-  // {
-  //   text: "📃 题库",
-  //   items: [],
-  // },
+  {
+    text: "📃 拓展",
+    items: [
+      { text: "云原生", link: "/docs/cloud/" },
+      { text: "搭建博客", link: "/docs/study/blog/" },
+      { text: "零碎笔记", link: "/docs/study/notes/" },
+    ],
+  },
   {
     text: "其他",
     items: [
-      {
-        text: "随笔",
-        link: "/docs/other/",
-      },
-      {
-        text: "学习",
-        link: "/docs/study/",
-      },
-      {
-        text: "读书",
-        link: "/docs/books/",
-      },
-      {
-        text: "云原生",
-        link: "/docs/cloud/",
-      },
+      { text: "生活", link: "/docs/other/" },
+      { text: "读书", link: "/docs/books/" },
     ],
   },
   { text: "📅 归档", link: "/docs" },
