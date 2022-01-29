@@ -15,9 +15,10 @@ module.exports = [
     ],
   },
   {
-    text: "📖 面试宝典",
+    text: "📖 面试",
     items: [
-      { text: "基础面试", link: "/docs/face/zero/" },
+      { text: "JS篇", link: "/docs/face/faceJS/" },
+      { text: "CSS篇", link: "/docs/face/faceCSS/" },
       {
         text: "进阶面试",
         link: "/docs/face/high/index",

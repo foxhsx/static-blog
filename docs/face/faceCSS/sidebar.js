@@ -1,15 +1,16 @@
 module.exports = [
   {
-    text: "CSS面试",
+    text: "CSS 篇",
     collapsable: true,
+    path: "/docs/face/faceCSS/",
     children: [
       {
         text: "CSS 盒模型有哪些？",
-        link: "/docs/face/high/notes/css_face/box_model",
+        link: "/docs/face/faceCSS/box_model",
       },
       {
         text: "css 实现居中对齐的方式",
-        link: "/docs/face/high/notes/css_face/center",
+        link: "/docs/face/faceCSS/center",
       },
     ],
   },
