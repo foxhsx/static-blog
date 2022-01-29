@@ -19,6 +19,7 @@ module.exports = {
   "/faceJS/": require("../docs/face/faceJS/sidebar.js"),
   "/faceCSS/": require("../docs/face/faceCSS/sidebar.js"),
   "/faceNetwork/": require("../docs/face/faceNetwork/sidebar.js"),
+  "/faceVue/": require("../docs/face/faceVue/sidebar.js"),
   "/high/": require("../docs/face/high/sidebar.js"),
   "/questionBank/": require("../docs/questionBank/sidebar"),
   "/books/": require("../docs/books/sidebar"),

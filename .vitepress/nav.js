@@ -20,6 +20,7 @@ module.exports = [
       { text: "JS篇", link: "/docs/face/faceJS/" },
       { text: "CSS篇", link: "/docs/face/faceCSS/" },
       { text: "网络篇", link: "/docs/face/faceNetwork/" },
+      { text: "Vue篇", link: "/docs/face/faceVue/" },
       {
         text: "进阶面试",
         link: "/docs/face/high/index",
