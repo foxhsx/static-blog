@@ -27,7 +27,8 @@ module.exports = {
   "/cloud/": require("../docs/cloud/sidebar"),
   "/notes/": require("../docs/study/notes/sidebar"),
   "/blog/": require("../docs/study/blog/sidebar"),
-  // 其他：生活、读书
+  // 其他：生活、读书、分享
   "/other/": require("../docs/other/sidebar"),
   "/books/": require("../docs/books/sidebar"),
+  "/shared/": require("../docs/shared/sidebar"),
 };

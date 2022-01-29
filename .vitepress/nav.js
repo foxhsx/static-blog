@@ -37,6 +37,7 @@ module.exports = [
     items: [
       { text: "生活", link: "/docs/other/" },
       { text: "读书", link: "/docs/books/" },
+      { text: "分享", link: "/docs/shared/" },
     ],
   },
   { text: "📅 归档", link: "/docs" },
