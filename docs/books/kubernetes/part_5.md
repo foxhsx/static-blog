@@ -120,3 +120,39 @@ $ kubeadm init --config kubeadm.yaml
 ```shell
 ```
 
+这个 `kubeadm join` 命令，就是用来给这个 Master 节点添加更多工作节点（Worker）的命令。我们在后面部署 Worker 节点的时候马上会用到它，所以找一个地方把这条命令记录下来。
+
+此外，kubeadm 还会提示我们第一次使用 K8S 集群所需要的配置命令：
+
+```shell
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+而需要这些配置命令的原因是：K8S 集群默认需要加密方式访问。所以，这几条命令，就是将刚刚部署生成的 K8S 集群的安全配置文件，保存到当前用户的 `.kube` 目录下，kubectl 默认会使用这个目录下的授权信息访问 K8S 集群。
+
+如果不这么做的话，我们每次都需要通过 `export KUBECONFIG` 环境变量告诉 `kubectl` 这个安全配置文件的配置。
+
+现在我们就可以使用 kubectl get 命令来查看当前唯一的一个节点状态了：
+
+```shell
+$ kubectl get nodes
+NAME		STATUS		ROLES		AGE	VERSION
+master 	NotReadt	master	1d  v1.11.1
+```
+
+可以看到，这个 get 指令输出的结果里，Master 节点的状态是 NotReady，这是为什么呢？
+
+在调试 K8S 集群的时候，最重要的手段就是用 `kubectl describe` 来查看这个节点（Node）对象的详细信息、状态和事件（Event），我们来试一下：
+
+```shell
+$ kubectl describe node master
+
+...
+Conditions:
+...
+
+Ready False ... 
+```
+

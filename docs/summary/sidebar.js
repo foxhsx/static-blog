@@ -77,6 +77,10 @@ module.exports = [
         text: "换行符没有起作用",
         link: "/docs/summary/notes/enter_newline_bug",
       },
+      {
+        text: "局域网内一台电脑访问另一台电脑里的虚拟机",
+        link: "/docs/summary/notes/link_vmare.md",
+      },
     ],
   },
 ];
