@@ -21,21 +21,14 @@ module.exports = [
       { text: "CSS篇", link: "/docs/face/faceCSS/" },
       { text: "网络篇", link: "/docs/face/faceNetwork/" },
       { text: "Vue篇", link: "/docs/face/faceVue/" },
-      {
-        text: "进阶面试",
-        link: "/docs/face/high/index",
-        activeMatch: "^/high/",
-      },
+      { text: "React篇", link: "/docs/face/faceReact/" },
+      { text: "Webpack篇", link: "/docs/face/faceWebpack/" },
     ],
   },
-  {
-    text: "📃 题库",
-    items: [
-      { text: "CSS", link: "/docs/questionBank/css/" },
-      { text: "HTML", link: "/docs/questionBank/html/" },
-      { text: "JavaScript", link: "/docs/questionBank/javascript/" },
-    ],
-  },
+  // {
+  //   text: "📃 题库",
+  //   items: [],
+  // },
   {
     text: "其他",
     items: [

@@ -12,7 +12,7 @@ categories:
 
 在讲述主题之前，我们先说一下浏览器的渲染机制。
 
-![](../../imgs/layout_repaint.webp)
+![](./imgs/layout_repaint.webp)
 
 以 `webkit` 为例：
 
@@ -24,7 +24,7 @@ categories:
 6. Painting（重绘）：根据渲染树及回流得到的几何信息，得到节点的绝对像素
 7. Display：最后将像素发送给 GPU，展示在页面上
 
-![](../../imgs/render_tree.webp)
+![](./imgs/render_tree.webp)
 
 构建 render tree，浏览器主要做了以下工作：
 

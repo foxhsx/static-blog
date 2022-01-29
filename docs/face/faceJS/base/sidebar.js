@@ -91,4 +91,34 @@ module.exports = [
     text: "编程题汇总（九）",
     link: "/docs/face/faceJS/base/Coding_9",
   },
+  {
+    text: "String",
+    collapsable: true,
+    children: [
+      { text: "String基础题", link: "/docs/face/faceJS/base/select_string" },
+      { text: "String编程题", link: "/docs/face/faceJS/base/code_string" },
+    ],
+  },
+  {
+    text: "Math",
+    collapsable: true,
+    children: [
+      { text: "Math基础题", link: "/docs/face/faceJS/base/select_math" },
+      { text: "Math编程题", link: "/docs/face/faceJS/base/code_math" },
+    ],
+  },
+  {
+    text: "Array",
+    collapsable: true,
+    children: [
+      { text: "Array基础题", link: "/docs/face/faceJS/base/select_array" },
+    ],
+  },
+  {
+    text: "Function",
+    collapsable: true,
+    children: [
+      { text: "函数基础题", link: "/docs/face/faceJS/base/select_function" },
+    ],
+  },
 ];

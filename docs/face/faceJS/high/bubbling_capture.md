@@ -24,7 +24,7 @@ DOM2 Events 规范规定事件流分为 3 个阶段：事件捕获、到达目�
 
 比如我们点击一个 html 中的 div 元素，则会以下列图示顺序触发点击事件：
 
-![](../../imgs/event_pink.webp)
+![](./imgs/event_pink.webp)
 
 在事件捕获中， click 事件首先由 document 元素捕获，然后沿着 DOM 树依次向下传播，直至到达实际的目标元素 div。
 
@@ -40,7 +40,7 @@ DOM2 Events 规范规定事件流分为 3 个阶段：事件捕获、到达目�
 
 它与事件捕获刚好是相反的，事件被定义为从最具体的元素（文档树中的目标节点）开始触发，然后向上传播至没有那么具体的元素（文档）。以事件捕获的图为例，我们会得到一个相反的顺序图出来。
 
-![](../../imgs/event_bubb.webp)
+![](./imgs/event_bubb.webp)
 
 所有现代浏览器都支持事件冒泡，只是在实现方式上会有一些变化。现代浏览器中的事件会一直冒泡到 window 对象。
 
@@ -66,7 +66,7 @@ document.body.onclick = function (event) {
 
 下面是一个完整的 DOM 事件流。
 
-![](../../imgs/event_pine.webp)
+![](./imgs/event_pine.webp)
 
 ## 补充
 

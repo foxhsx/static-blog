@@ -1,11 +1,11 @@
 module.exports = [
   {
-    text: "webpack面试",
+    text: "webpack篇",
     collapsable: true,
     children: [
       {
         text: "webpack中 loader 和 plugin 的区别",
-        link: "/docs/face/high/notes/webpack/loaderVSplugin",
+        link: "/docs/face/faceWebpack/loaderVSplugin",
       },
     ],
   },

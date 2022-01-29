@@ -131,10 +131,10 @@ inside_variable2 = "function";
 ```
 
 代码在被 JavaScript 引擎编译并创建全局上下文，放入到调用栈中，如下图：
-![](../../imgs/global_environment.webp)
+![](./imgs/global_environment.webp)
 
 当全局代码执行到函数 fn 的时候，创建函数 fn 的执行上下文，放入到调用栈当中，此时：
-![](../../imgs/fn_environment.webp)
+![](./imgs/fn_environment.webp)
 
 而当代码执行到块级作用域时，块级作用域不存在编译过程，词法环境就是一个小型的栈，所以这里块级作用域的执行是将变量加入到当前 fn 环境的词法环境中去。（就懒得画图了，自行脑补）
 

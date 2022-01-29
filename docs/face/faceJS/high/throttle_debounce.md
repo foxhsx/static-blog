@@ -47,7 +47,7 @@ function testScroll() {
 window.addEventListener("scroll", throttle(testScroll, 300));
 ```
 
-![](../../imgs/throttle.webp)
+![](./imgs/throttle.webp)
 
 函数节流的适用场景会在一些 scroll 和 resize 事件中用到。
 
