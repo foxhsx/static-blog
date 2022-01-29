@@ -173,7 +173,7 @@ axios.defaults.withCredentials = true;
 
 实现原理：同源策略是浏览器需要遵循的标准，而如果是请求都发给代理服务器代理服务器再向后端服务器请求就可以规避跨域的问题。
 
-![](../../imgs/proxy.webp)
+![](./imgs/proxy.webp)
 
 例如用 nginx 做代理服务器。
 nginx 配置

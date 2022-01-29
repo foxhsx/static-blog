@@ -18,6 +18,7 @@ module.exports = {
   "/study/": require("../docs/study/sidebar.js"),
   "/faceJS/": require("../docs/face/faceJS/sidebar.js"),
   "/faceCSS/": require("../docs/face/faceCSS/sidebar.js"),
+  "/faceNetwork/": require("../docs/face/faceNetwork/sidebar.js"),
   "/high/": require("../docs/face/high/sidebar.js"),
   "/questionBank/": require("../docs/questionBank/sidebar"),
   "/books/": require("../docs/books/sidebar"),
