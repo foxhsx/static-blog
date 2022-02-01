@@ -360,6 +360,10 @@ K8S 支持容器网络插件，使用的是一个名叫 CNI 的通用接口，�
 
 至此，K8S 的 Master 节点就部署完成了。如果你只需要一个单节点的 K8S，现在就可以使用了。不过，在默认情况下，K8S 的 Master 节点是不能运行用户 Pod 的，所以还需要额外做一个小操作。
 
+---
+
+> 还未进行实践
+
 ### 部署 K8S 的 Worker 节点
 
 K8S 的 Worker 节点跟 Master 节点几乎是相同的，它们运行着的都是一个 kubelet 组件。唯一的区别在于，在 kubeadm init 的过程中，kubelet 启动后，Master 节点上还会自动运行 `kube-apiserver` 、`kube-scheduler` 、`kube-controller-manager` 这三个系统 Pod。
@@ -372,4 +376,303 @@ K8S 的 Worker 节点跟 Master 节点几乎是相同的，它们运行着的都
 完成。
 
 ### 通过 Taint/Toleration 调整 Master 执行 Pod 的策略
+
+我们之前说过默认情况下 Master 节点是不允许运行用户的 Pod 的。而 K8S 做到这一点，依靠的是 K8S 的 Taint/Toleration 机制。
+
+它的原理非常简单：一旦某个节点被加上了一个 Taint，即被打上了污点，那么所有 Pod 就都不能在这个节点上运行，因为 K8S 的 Pod 都有洁癖。
+
+除非有个别的 Pod 声明自己能容忍这个污点，即声明了 Toleration，它才可以在这个节点上运行。
+
+那么，为节点打污点（Taint）的命令是：
+
+```shell
+$ kubectl taint node <node_name> foo=bar:NoSchedule
+```
+
+上述命令表示会在一个节点里增加一个键值对格式的 Taint，即：foo=bar:NoSchedule。其中 NoSchedule 表示这个 Taint 只会在调度新的 Pod 时产生作用，而不会影响已经在节点中运行的 Pod，哪怕它们没有 Toleration。
+
+那 Pod 如何声明 Toleration 呢？
+
+很简单，只要在 Pod 的 YAML 文件里的 spec 部分，假如 tolerations 字段即可：
+
+```yaml
+apiVersion: v1
+kind: Pod
+...
+spec:
+	tolerations:
+	- key: "foo"
+		operator: "Equal"
+		value: "bar"
+		effect: "NoSchedule"
+```
+
+那这个 Toleration 的含义就是，这个 Pod 能够容忍所有键值对为 `foo=bar` 的 Taint（operator：Equal，等于操作）。
+
+现在我们回到刚刚搭建好的集群上来。我们可以查看一下集群上 Master 节点的 Taint 字段，就会有所发现：
+
+```shell
+$ kubectl describe node master
+
+Name:               node
+Roles:              control-plane,master
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=node
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node-role.kubernetes.io/master=
+                    node.kubernetes.io/exclude-from-external-load-balancers=
+Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: /var/run/dockershim.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    projectcalico.org/IPv4Address: 10.32.0.1/12
+                    projectcalico.org/IPv4IPIPTunnelAddr: 172.16.167.128
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Sat, 29 Jan 2022 23:36:14 -0800
+Taints:             node-role.kubernetes.io/master:NoSchedule
+```
+
+可以看到的是，Master 节点默认被加上了 `node-role.kubernetes.io/master:NoSchedule` 这样的一个污点，其中键是 `node-role.kubernetes.io/master` ，而没有提供值。
+
+我们如果想在 Master 节点上运行所有以 foo 为键的 Taint，就需要在 Pod 的 YAML 文件中加上对应的字段，才能让这个 Pod 运行在该 Master 节点上：
+
+```YAML
+apiVersion: v1
+kind: Pod
+...
+spec:
+  tolerations:
+  - key: "foo"
+    operator: "Exists"
+    effect: "NoSchedule"
+```
+
+当让，如果我们只是想要一个单节点的 K8S，删除这个 Taint 才是正确的选择：
+
+```shell
+$ kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+上述命令，我们在后面加了一个短横线，这个格式就表示会移除所有以 `node-role.kubernetes.io/master` 为键的 Taint。
+
+至此，一个基本完整的 K8S 集群就部署完成了。
+
+一些像证书、授权、各个组件的配置等部署中最麻烦的操作，kubeadm 都已经帮我们完成了。
+
+接下来，我们再在这个 K8S 集群上安装一些其他的辅助插件，比如 Dashboard 和存储插件。
+
+### 部署 Dashboard 可视化插件
+
+在 K8S 社区中，有一个很受欢迎的 Dashboard 项目，它的部署非常简单：
+
+```shell
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.4.0/aio/deploy/recommended.yaml
+```
+
+但是这里有一个问题就是，这个地址它又是国外的，所以同学们都懂的，所以需要科学上网哦。
+
+安装好以后呢，我们启动 Proxy 在本地进行访问。
+
+```shell
+$ kubectl proxy
+```
+
+可以在命令行中验证一下是否 OK:
+
+```shell
+$ curl 127.0.0.1:8001
+{
+  "paths": [
+    "/.well-known/openid-configuration",
+    "/api",
+    "/api/v1",
+    "/apis",
+    "/apis/",
+    "/apis/admissionregistration.k8s.io",
+    "/apis/admissionregistration.k8s.io/v1",
+    "/apis/apiextensions.k8s.io",
+    "/apis/apiextensions.k8s.io/v1",
+    "/apis/apiregistration.k8s.io",
+    "/apis/apiregistration.k8s.io/v1",
+    "/apis/apps",
+    "/apis/apps/v1",
+    "/apis/authentication.k8s.io",
+    "/apis/authentication.k8s.io/v1",
+    "/apis/authorization.k8s.io",
+    "/apis/authorization.k8s.io/v1",
+    "/apis/autoscaling",
+    "/apis/autoscaling/v1",
+    "/apis/autoscaling/v2",
+    "/apis/autoscaling/v2beta1",
+    "/apis/autoscaling/v2beta2",
+    "/apis/batch",
+    "/apis/batch/v1",
+    "/apis/batch/v1beta1",
+    "/apis/certificates.k8s.io",
+    "/apis/certificates.k8s.io/v1",
+    "/apis/coordination.k8s.io",
+    "/apis/coordination.k8s.io/v1",
+    "/apis/crd.projectcalico.org",
+    "/apis/crd.projectcalico.org/v1",
+    "/apis/discovery.k8s.io",
+    "/apis/discovery.k8s.io/v1",
+    "/apis/discovery.k8s.io/v1beta1",
+    "/apis/events.k8s.io",
+    "/apis/events.k8s.io/v1",
+    "/apis/events.k8s.io/v1beta1",
+    "/apis/flowcontrol.apiserver.k8s.io",
+    "/apis/flowcontrol.apiserver.k8s.io/v1beta1",
+    "/apis/flowcontrol.apiserver.k8s.io/v1beta2",
+    "/apis/networking.k8s.io",
+    "/apis/networking.k8s.io/v1",
+    "/apis/node.k8s.io",
+    "/apis/node.k8s.io/v1",
+    "/apis/node.k8s.io/v1beta1",
+    "/apis/policy",
+    "/apis/policy/v1",
+    "/apis/policy/v1beta1",
+    "/apis/rbac.authorization.k8s.io",
+    "/apis/rbac.authorization.k8s.io/v1",
+    "/apis/scheduling.k8s.io",
+    "/apis/scheduling.k8s.io/v1",
+    "/apis/storage.k8s.io",
+    "/apis/storage.k8s.io/v1",
+    "/apis/storage.k8s.io/v1beta1",
+    "/healthz",
+    "/healthz/autoregister-completion",
+    "/healthz/etcd",
+    "/healthz/log",
+    "/healthz/ping",
+    "/healthz/poststarthook/aggregator-reload-proxy-client-cert",
+    "/healthz/poststarthook/apiservice-openapi-controller",
+    "/healthz/poststarthook/apiservice-registration-controller",
+    "/healthz/poststarthook/apiservice-status-available-controller",
+    "/healthz/poststarthook/bootstrap-controller",
+    "/healthz/poststarthook/crd-informer-synced",
+    "/healthz/poststarthook/generic-apiserver-start-informers",
+    "/healthz/poststarthook/kube-apiserver-autoregistration",
+    "/healthz/poststarthook/priority-and-fairness-config-consumer",
+    "/healthz/poststarthook/priority-and-fairness-config-producer",
+    "/healthz/poststarthook/priority-and-fairness-filter",
+    "/healthz/poststarthook/rbac/bootstrap-roles",
+    "/healthz/poststarthook/scheduling/bootstrap-system-priority-classes",
+    "/healthz/poststarthook/start-apiextensions-controllers",
+    "/healthz/poststarthook/start-apiextensions-informers",
+    "/healthz/poststarthook/start-cluster-authentication-info-controller",
+    "/healthz/poststarthook/start-kube-aggregator-informers",
+    "/healthz/poststarthook/start-kube-apiserver-admission-initializer",
+    "/livez",
+    "/livez/autoregister-completion",
+    "/livez/etcd",
+    "/livez/log",
+    "/livez/ping",
+    "/livez/poststarthook/aggregator-reload-proxy-client-cert",
+    "/livez/poststarthook/apiservice-openapi-controller",
+    "/livez/poststarthook/apiservice-registration-controller",
+    "/livez/poststarthook/apiservice-status-available-controller",
+    "/livez/poststarthook/bootstrap-controller",
+    "/livez/poststarthook/crd-informer-synced",
+    "/livez/poststarthook/generic-apiserver-start-informers",
+    "/livez/poststarthook/kube-apiserver-autoregistration",
+    "/livez/poststarthook/priority-and-fairness-config-consumer",
+    "/livez/poststarthook/priority-and-fairness-config-producer",
+    "/livez/poststarthook/priority-and-fairness-filter",
+    "/livez/poststarthook/rbac/bootstrap-roles",
+    "/livez/poststarthook/scheduling/bootstrap-system-priority-classes",
+    "/livez/poststarthook/start-apiextensions-controllers",
+    "/livez/poststarthook/start-apiextensions-informers",
+    "/livez/poststarthook/start-cluster-authentication-info-controller",
+    "/livez/poststarthook/start-kube-aggregator-informers",
+    "/livez/poststarthook/start-kube-apiserver-admission-initializer",
+    "/logs",
+    "/metrics",
+    "/openapi/v2",
+    "/openid/v1/jwks",
+    "/readyz",
+    "/readyz/autoregister-completion",
+    "/readyz/etcd",
+    "/readyz/informer-sync",
+    "/readyz/log",
+    "/readyz/ping",
+    "/readyz/poststarthook/aggregator-reload-proxy-client-cert",
+    "/readyz/poststarthook/apiservice-openapi-controller",
+    "/readyz/poststarthook/apiservice-registration-controller",
+    "/readyz/poststarthook/apiservice-status-available-controller",
+    "/readyz/poststarthook/bootstrap-controller",
+    "/readyz/poststarthook/crd-informer-synced",
+    "/readyz/poststarthook/generic-apiserver-start-informers",
+    "/readyz/poststarthook/kube-apiserver-autoregistration",
+    "/readyz/poststarthook/priority-and-fairness-config-consumer",
+    "/readyz/poststarthook/priority-and-fairness-config-producer",
+    "/readyz/poststarthook/priority-and-fairness-filter",
+    "/readyz/poststarthook/rbac/bootstrap-roles",
+    "/readyz/poststarthook/scheduling/bootstrap-system-priority-classes",
+    "/readyz/poststarthook/start-apiextensions-controllers",
+    "/readyz/poststarthook/start-apiextensions-informers",
+    "/readyz/poststarthook/start-cluster-authentication-info-controller",
+    "/readyz/poststarthook/start-kube-aggregator-informers",
+    "/readyz/poststarthook/start-kube-apiserver-admission-initializer",
+    "/readyz/shutdown",
+    "/version"
+  ]
+}
+```
+
+可以成功链接！
+
+接下来我们要在浏览器中进行访问，毕竟是 Dashboard，访问的地址官网也有介绍：http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+![](./imgs/kubernetes_dashboard.webp)
+
+可以看到登录的话需要 `kubeconfig` 和`token` 。
+
+我们以 `token` 为例，做下演示：
+
+1. 创建一个 Service Account 和 ClusterRoleBinding，此时我们需要创建一个 YAML 文件：
+
+```YAML
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+2. 启用这个 YAML 文件
+
+```shell
+$ kubectl apply -f dashborad-adminuser.yaml
+```
+
+3. 查看 token 信息：`kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"`
+
+```shell
+eyJhbGciOiJSUzI1NiIsImtpZCI6IkdPdjgtUDFLNjhWQXhNV2NIaW1TQ2pRcmhZNEtaLVBUazVQT0RGU1ZoXzgifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLXdnYmZxIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiIxOGU5YzRhMS04MzQ0LTQ3OTYtOTk2My0zZjI2ZDMwNzkwYTUiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.axPiEZH7A5zeV7bLKbXjk7Fvy4wCw6ajrXKZY0F4elp5F0Htzrz732LvNi8hbmXrHITuBQsAWGCTlL_9u7EtZkEYS2q1hXJpvKxfTkY5stWA-w6Oaq3Ie-706EuzgSexrH0cycoPhEZd5wkvGtktifvONVltJEfonvbLWIFwM45o1qi-g64e41YiQZtIhvtS-FLbrmzToYs9oD2oMZIRZN1U240jvnt8kNGqt5grKjPmeMyU5M5n7ABto8RlGmevRXDxhTzhcZTZz4xfzJvXWxo_AgAiyzxJUJ4RAbOrnD3X_Dz8BZBa0jiJKoY4qGYHt-ue_h
+```
+
+然后将这段 token 复制到 dashboard 登录页中即可。
+
+> MMP，在这里卡住了。token 401
+
+![](./imgs/dashboard.webp)
+
+如果想在集群外访问到这个 Dashboard 的话，就需要用到 Ingress。
+
+### 部署容器存储插件
 
