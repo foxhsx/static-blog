@@ -23,7 +23,7 @@ describe: 动起小手来练习
 ### 安装 kubeadm 和 Docker
 
 1. 添加 kubeadm 的源
-2. 然后直接用 `apt-get`  安装即可
+2. 然后直接用 `apt-get` 安装即可
 3. `apt-key` 可以直接使用 `apt-get` 进行安装
 
 ```shell
@@ -62,12 +62,12 @@ $ yum install -y kubelet kubeadm kubectl
 yum-config-manager \
     --add-repo \
     https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-    
-# 安装 docker 
+
+# 安装 docker
 yum install docker-ce docker-ce-cli containerd.io
 ```
 
-- 验证 Docker 是否安装成功：`docker version` 
+- 验证 Docker 是否安装成功：`docker version`
 - 验证 Kubectl 是否安装成功：`kubectl version`
 - 验证 kubelet 是否安装成功：`kubelet --version`
 - 验证 kubeadm 是否安装成功：`kubeadm version`
@@ -149,7 +149,7 @@ $ sysctl --system
 
 ### 部署 Kubernetes 的 Master 节点
 
-接下来我们通过一份配置文件来执行 `kubeadm init` 命令，这是因为一些更加高级的功能只能通过配置文件来设定。这份配置文件是通过 `--config`  选项参数来指定的，它必须包含 `ClusterConfiguration` 结构，并可能包含更多的由 `---\n` 分隔的结构。
+接下来我们通过一份配置文件来执行 `kubeadm init` 命令，这是因为一些更加高级的功能只能通过配置文件来设定。这份配置文件是通过 `--config` 选项参数来指定的，它必须包含 `ClusterConfiguration` 结构，并可能包含更多的由 `---\n` 分隔的结构。
 
 我们先来生成一个默认的 kubeadm 配置文件:
 
@@ -230,7 +230,7 @@ $ kubeadm init --config kubeadm.yaml
 
    ```shell
    $ kubeadm config images list
-   
+
    k8s.gcr.io/kube-apiserver:v1.23.3
    k8s.gcr.io/kube-controller-manager:v1.23.3
    k8s.gcr.io/kube-scheduler:v1.23.3
@@ -258,11 +258,11 @@ $ kubeadm init --config kubeadm.yaml
 
    ```json
    {
-       "exec-opts": ["native.cgroupdriver=systemd"]
+     "exec-opts": ["native.cgroupdriver=systemd"]
    }
    ```
 
-设置完成之后，我们重新执行 `init` 操作：`kubeadm init --config kubeadm.yaml` 
+设置完成之后，我们重新执行 `init` 操作：`kubeadm init --config kubeadm.yaml`
 
 部署完成后，kubeadm 会生成一行指令：
 
@@ -660,7 +660,7 @@ subjects:
 $ kubectl apply -f dashborad-adminuser.yaml
 ```
 
-3. 查看 token 信息：`kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"`
+3. 查看 token 信息：`kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="\{\{.data.token | base64decode\}\}"`
 
 ```shell
 eyJhbGciOiJSUzI1NiIsImtpZCI6IkdPdjgtUDFLNjhWQXhNV2NIaW1TQ2pRcmhZNEtaLVBUazVQT0RGU1ZoXzgifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLXdnYmZxIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiIxOGU5YzRhMS04MzQ0LTQ3OTYtOTk2My0zZjI2ZDMwNzkwYTUiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.axPiEZH7A5zeV7bLKbXjk7Fvy4wCw6ajrXKZY0F4elp5F0Htzrz732LvNi8hbmXrHITuBQsAWGCTlL_9u7EtZkEYS2q1hXJpvKxfTkY5stWA-w6Oaq3Ie-706EuzgSexrH0cycoPhEZd5wkvGtktifvONVltJEfonvbLWIFwM45o1qi-g64e41YiQZtIhvtS-FLbrmzToYs9oD2oMZIRZN1U240jvnt8kNGqt5grKjPmeMyU5M5n7ABto8RlGmevRXDxhTzhcZTZz4xfzJvXWxo_AgAiyzxJUJ4RAbOrnD3X_Dz8BZBa0jiJKoY4qGYHt-ue_h

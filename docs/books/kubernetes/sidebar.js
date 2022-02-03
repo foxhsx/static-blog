@@ -16,6 +16,10 @@ module.exports = [
         text: "5.搭建一个完整的 K8S 集群",
         link: "/docs/books/kubernetes/part_5",
       },
+      {
+        text: "6.第一个容器化应用",
+        link: "/docs/books/kubernetes/part_6",
+      },
     ],
   },
 ];
