@@ -20,6 +20,10 @@ module.exports = [
         text: "6.第一个容器化应用",
         link: "/docs/books/kubernetes/part_6",
       },
+      {
+        text: "7.为什么我们需要 Pod?",
+        link: "/docs/books/kubernetes/part_7",
+      },
     ],
   },
 ];

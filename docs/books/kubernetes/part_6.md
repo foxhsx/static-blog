@@ -278,3 +278,4 @@ $ kubectl delete -f nginx-deployment.yaml
 3. 最后，在 K8S 上部署这个 YAML 文件。
 
 最重要的是，在部署到 K8S 之后，接下来的所有操作，要么通过 kubectl 来执行，要么通过修改 YAML 文件来实现，就尽量不要再碰 Docker 的命令行了。
+
