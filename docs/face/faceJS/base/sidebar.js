@@ -92,8 +92,12 @@ module.exports = [
     link: "/docs/face/faceJS/base/Coding_9",
   },
   {
+    text: "== 和 === 以及 Object.is",
+    link: "/docs/face/faceJS/base/object_is",
+  },
+  {
     text: "String",
-    collapsable: true,
+    collapsable: false,
     children: [
       { text: "String基础题", link: "/docs/face/faceJS/base/select_string" },
       { text: "String编程题", link: "/docs/face/faceJS/base/code_string" },
@@ -101,7 +105,7 @@ module.exports = [
   },
   {
     text: "Math",
-    collapsable: true,
+    collapsable: false,
     children: [
       { text: "Math基础题", link: "/docs/face/faceJS/base/select_math" },
       { text: "Math编程题", link: "/docs/face/faceJS/base/code_math" },
@@ -109,14 +113,14 @@ module.exports = [
   },
   {
     text: "Array",
-    collapsable: true,
+    collapsable: false,
     children: [
       { text: "Array基础题", link: "/docs/face/faceJS/base/select_array" },
     ],
   },
   {
     text: "Function",
-    collapsable: true,
+    collapsable: false,
     children: [
       { text: "函数基础题", link: "/docs/face/faceJS/base/select_function" },
     ],

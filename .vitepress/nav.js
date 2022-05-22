@@ -17,6 +17,7 @@ module.exports = [
     text: "📖 面试",
     items: [
       { text: "JS篇", link: "/docs/face/faceJS/" },
+      { text: "TS篇", link: "/docs/face/faceTS/" },
       { text: "CSS篇", link: "/docs/face/faceCSS/" },
       { text: "网络篇", link: "/docs/face/faceNetwork/" },
       { text: "Vue篇", link: "/docs/face/faceVue/" },
