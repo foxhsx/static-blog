@@ -12,7 +12,6 @@
 
 <script src="./SideBar"></script>
 
-
 <style>
 .show-mobile {
   display: none;

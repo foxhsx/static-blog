@@ -79,7 +79,7 @@ module.exports = [
       },
       {
         text: "局域网内一台电脑访问另一台电脑里的虚拟机",
-        link: "/docs/summary/notes/link_vmare.md",
+        link: "/docs/summary/notes/link_vmare",
       },
     ],
   },
